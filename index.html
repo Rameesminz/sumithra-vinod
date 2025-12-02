@@ -1,24 +1,3 @@
-<!-- PHOTO PLACEHOLDER GUIDE -->
-<!-- To add a photo for each candidate row, insert this inside each <tr>:
-     <td class="candidate-photo">
-         <img src="images/candidate_1.jpg" alt="candidate photo" />
-     </td>
-   Change only the image file for each row.
--->
-<!-- Polster-like EVM clone: full standalone HTML/CSS/JS (drop into a Vite public/index.html or open locally)
-
-Usage:
- - To show a candidate image for a candidate row, add a query param `?photo=<url>` or `?photoN=<url>` where N is candidate number.
- - Example: index.html?photo=https://example.com/Hand_INC.jpg
- - The script will also try `/v2/evm/candidate/<id>/photo` if the path contains an id-like segment.
-
-Features:
- - Responsive centered EVM card
- - Candidate rows with number, name, symbol image (loaded dynamically), LED, big rounded vote button
- - Button/LED locking for 1.2s with beep
- - Small accessibility + keyboard support (Enter to vote when a row is focused)
-
--->
 <!doctype html>
 <html lang="en">
 <head>
@@ -42,40 +21,36 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 .container{width:95%;max-width:760px;padding:24px;margin-top:28px}
-.header-pills{display:flex;gap:18px;justify-content:center;margin-bottom:12px}
-.pill{padding:10px 36px;border-radius:24px;background:#d7d7d7;color:#444;font-weight:600}
+.header-pills{display:flex;gap:12px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+.pill{padding:8px 18px;border-radius:24px;background:#d7d7d7;color:#444;font-weight:600}
 .pill.active{background:#10a0c6;color:white}
-.card{
-  background:var(--card-bg);border-radius:22px;padding:16px;box-shadow:0 8px 30px rgba(20,30,40,0.08);
-}
-.card-inner{background:var(--panel);border-radius:14px;padding:18px}
+.card{background:var(--card-bg);border-radius:22px;padding:16px;box-shadow:0 8px 30px rgba(20,30,40,0.08);}
+.card-inner{background:var(--panel);border-radius:14px;padding:12px}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:10px}
 .status{font-weight:700;color:#0b2b1f}
 .status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2db34a;margin-left:8px}
 .title{font-weight:700;color:#0c3b5a}
-.table-wrap{margin-top:12px;background:transparent;padding:14px;border-radius:8px}
+.table-wrap{overflow-x:auto;margin-top:12px;background:transparent;padding:0;border-radius:8px}
 .table{width:100%;border-collapse:collapse}
 .table tr{height:52px}
-.table td{vertical-align:middle;border-bottom:1px solid rgba(15,25,35,0.06);padding:6px}
+.table td{vertical-align:middle;border-bottom:1px solid rgba(15,25,35,0.06);padding:6px 4px}
 .table .idx{width:42px;text-align:center;color:var(--muted)}
 .table .name{font-weight:600;text-align:left;padding-left:12px}
 .table .symbol{width:74px;text-align:center}
-.symbol img{max-width:36px;height:36px;border-radius:6px;background:white;padding:4px;box-shadow:0 1px 0 rgba(0,0,0,0.06)}
-.controls{width:120px;text-align:center}
-.vote-btn{
-  width:76px;height:36px;border-radius:18px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,0.12);
-}
+.symbol img{max-width:28px;height:28px;border-radius:6px;background:white;padding:4px;box-shadow:0 1px 0 rgba(0,0,0,0.06)}
+.controls{width:92px;text-align:center;display:flex;justify-content:flex-end;align-items:center;gap:6px}
+.vote-btn{width:50px;height:28px;border-radius:16px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.12)}
 .vote-btn:active{transform:translateY(1px)}
-.led{width:18px;height:18px;border-radius:50%;background:#5c0b10;box-shadow:inset 0 0 6px rgba(0,0,0,0.35)}
+.led{width:16px;height:16px;border-radius:50%;background:#5c0b10;box-shadow:inset 0 0 4px rgba(0,0,0,0.35)}
 .led.on{background:#b5161a;box-shadow:0 0 8px rgba(181,22,26,0.8), inset 0 0 6px #ffcfcf}
 .row-focused{outline:3px solid rgba(11,75,122,0.08);border-radius:8px}
 .small-muted{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
 @media (max-width:520px){
-  .container{max-width:360px;padding:10px}
-  .pill{padding:8px 18px}
-  .table tr{height:56px}
-  .controls{width:92px}
-  .symbol img{max-width:28px;height:28px}
+  .container{max-width:360px;padding:10px;margin-top:16px}
+  .table tr{height:48px}
+  .symbol img{max-width:24px;height:24px}
+  .vote-btn{width:50px;height:28px;font-size:12px}
+  .controls{width:92px;gap:6px}
 }
 </style>
 </head>
@@ -97,11 +72,9 @@ body{
       <div class="table-wrap">
         <table class="table" role="list" aria-label="candidate-list">
           <tbody id="candidateBody">
-            <!-- rows added by JS -->
+            <!-- JS will populate rows -->
           </tbody>
-                <!-- Added candidate photo column at the end -->
-        <td class="candidate-photo"><img src="" alt="candidate photo" id="photo3" /></td>
-    </table>
+        </table>
       </div>
 
       <div class="small-muted">Use mouse or keyboard. Focus a row and press Enter to vote.</div>
@@ -114,7 +87,7 @@ body{
 </audio>
 
 <script>
-// Sample candidates (in real app load from server)
+// Candidate data
 const defaultCandidates = [
   { id: 1, name: '', symbol: '' },
   { id: 2, name: '', symbol: '' },
@@ -131,18 +104,18 @@ const defaultCandidates = [
 const candidateBody = document.getElementById('candidateBody');
 let votingLocked = false;
 
-// Utility to get query params
-function getQueryParams() {
-  const p = {};
-  location.search.replace(/^\?/, '').split('&').forEach(pair=>{
-    if(!pair) return; const [k,v]=pair.split('='); p[decodeURIComponent(k)] = decodeURIComponent(v||'');
+// Query params
+function getQueryParams(){
+  const p={};
+  location.search.replace(/^\?/,'').split('&').forEach(pair=>{
+    if(!pair) return;
+    const [k,v]=pair.split('='); p[decodeURIComponent(k)]=decodeURIComponent(v||'');
   });
   return p;
 }
-
 const params = getQueryParams();
 
-// If path contains candidate id like /candidate/ALAPPUZHA_G04073_W01213_1/polster
+// Path ID
 function extractIdFromPath(){
   const parts = location.pathname.split('/').filter(Boolean);
   const idx = parts.findIndex(x=>x.toLowerCase()==='candidate');
@@ -151,12 +124,12 @@ function extractIdFromPath(){
 }
 const pathId = extractIdFromPath();
 
-// Build rows
+// Build table rows
 function renderRows(candidates){
   candidateBody.innerHTML='';
-  candidates.forEach((c,ii)=>{
+  candidates.forEach(c=>{
     const tr = document.createElement('tr');
-    tr.tabIndex = 0; // focusable
+    tr.tabIndex = 0;
     tr.className = 'candidate-row';
     tr.dataset.num = c.id;
 
@@ -165,75 +138,61 @@ function renderRows(candidates){
       <td class="name">${c.name || '&nbsp;'}</td>
       <td class="symbol">${c.symbol ? `<img alt="symbol-${c.id}" src="${c.symbol}">` : ''}</td>
       <td class="controls">
-        <div style="display:flex;align-items:center;gap:10px;justify-content:flex-end">
-          <div class="led" id="led${c.id}" aria-hidden></div>
-          <div class="vote-btn" role="button" tabindex="-1" data-id="${c.id}">VOTE</div>
-        </div>
+        <div class="led" id="led${c.id}" aria-hidden></div>
+        <div class="vote-btn" role="button" tabindex="-1" data-id="${c.id}">VOTE</div>
       </td>
     `;
 
-    // keyboard focus styling
     tr.addEventListener('focus', ()=> tr.classList.add('row-focused'));
     tr.addEventListener('blur', ()=> tr.classList.remove('row-focused'));
-
-    // row keyboard vote
     tr.addEventListener('keydown', (ev)=>{
-      if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); const btn = tr.querySelector('.vote-btn'); btn.click(); }
+      if(ev.key==='Enter'||ev.key===' '){ev.preventDefault(); tr.querySelector('.vote-btn').click();}
     });
 
     candidateBody.appendChild(tr);
   });
 
-  // attach click handlers to vote buttons
   document.querySelectorAll('.vote-btn').forEach(btn=>{
     btn.addEventListener('click', ()=> castVote(btn, parseInt(btn.dataset.id,10)));
   });
 }
 
-// Try to map photo query params like photo, photo3, photo2 etc
+// Attach photos from query or path
 function attachPhotos(candidates){
   candidates.forEach(c=>{
-    const qKey = params['photo' + c.id] || params['photo'];
+    const qKey = params['photo'+c.id] || params['photo'];
     if(qKey) c.symbol = qKey;
-    // if not, and pathId exists try to construct a candidate-photo URL pattern
-    else if(pathId){
-      // best-effort common pattern; may fail if server doesn't serve file
-      // adjust this to your backend pattern if available
-      c.symbol = `/v2/evm/candidate/${encodeURIComponent(pathId)}/symbol_${c.id}.jpg`;
-    }
+    else if(pathId) c.symbol = `/v2/evm/candidate/${encodeURIComponent(pathId)}/symbol_${c.id}.jpg`;
   });
 }
 
 attachPhotos(defaultCandidates);
 renderRows(defaultCandidates);
 
-function castVote(btn, num){
-  if(votingLocked) return; // lock while LED/beep
+// Vote function
+function castVote(btn,num){
+  if(votingLocked) return;
   votingLocked = true;
 
-  // clear previous
   document.querySelectorAll('.vote-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.led').forEach(l=>l.classList.remove('on'));
 
   btn.classList.add('active');
-  const led = document.getElementById('led' + num);
+  const led = document.getElementById('led'+num);
   if(led) led.classList.add('on');
 
-  // play beep
   const beep = document.getElementById('beepSound');
-  beep.currentTime = 0; beep.play().catch(()=>{});
+  beep.currentTime=0; beep.play().catch(()=>{});
 
-  // simulate sending vote (here console.log — replace with fetch to your API)
   console.log('voted for', num, 'pathId', pathId);
 
   setTimeout(()=>{
     if(led) led.classList.remove('on');
     btn.classList.remove('active');
-    try{ beep.pause(); beep.currentTime = 0; }catch(e){}
-    votingLocked = false;
-  }, 1200);
+    try{beep.pause(); beep.currentTime=0;}catch(e){}
+    votingLocked=false;
+  },1200);
 }
-
 </script>
 </body>
 </html>
