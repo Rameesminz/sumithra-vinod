@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta charset="UTF-8">
+    <title>ELECTION-2025</title>
+
+    <style>
+        /* Make the page fullscreen + centered */
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            /* for natural scroll */
+            background: #f5f5f5;
+        }
+
+        /* Outer box responsive */
+        .outer-box {
+            width: 95%;
+            max-width: 420px;
+            background: #dcdcdc;
+            padding: 15px;
+            border-radius: 20px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        /* Inner box */
+        .inner-box {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px 12px;
+            text-align: center;
+        }
+
+        /* Table wrapper (prevents shrinking) */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+
+        /* All rows equal height */
+        td,
+        th {
+            border: 1px solid #000;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Fix vote button centering */
+        .vote-btn {
+            width: 45px;
+            height: 22px;
+            background: #201d44;
+            border-radius: 40px;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* LED wrapper cell */
+        td.led-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* LED base */
+        .led {
+            width: 18px;
+            height: 18px;
+            background: #ecebf0;
+            /* dark red when off */
+            border-radius: 50%;
+            box-shadow: inset 0 0 4px #2a2046;
+            transition: 0.15s ease-in-out;
+        }
+
+        /* LED ON state */
+        .led.on {
+            background: red;
+            box-shadow:
+                0 0 4px red,
+                0 0 10px red,
+                0 0 14px red,
+                inset 0 0 4px #ffcccc;
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 15px;
+            color: #777;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="outer-box">
+        <div class="inner-box">
+
+            <h1>ELECTION-2025</h1>
+            <h2>WARD-98</h2>
+
+            <table>
+                <tr>
+                    <th>No</th>
+                    <th>പേര്</th>
+                    <th>ചിഹ്നം</th>
+                    <th>Vote</th>
+                    <th></th>
+                </tr>
+
+                <tr>
+                    <td>1</td>
+                    <td></td>
+                    <td>
+                    </td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 1)"></div>
+                    </td>
+                    <td>
+                        <div id="led1" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 3)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>സുധീഷ് കുമാർ</td>
+                    <td>
+<img src="images/new.jpg" width="50" alt="Hand symbol">
+
+                    </td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 2)"></div>
+                    </td>
+                    <td>
+                        <div id="led2" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 4)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td></td>
+                    <td><img src="images/new.jpg" width="50" alt="Hand symbol"></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 5)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 6)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 7)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 8)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <div class="vote-btn" onclick="castVote(this, 8)"></div>
+                    </td>
+                    <td>
+                        <div id="led3" class="led"></div>
+                    </td>
+                </tr>
+
+            </table>
+
+            <footer>Developed by:Ramees </footer>
+        </div>
+    </div>
+
+    <!-- REAL EVM BEEP SOUND -->
+
+    <!-- <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg"> -->
+    <audio id="beepSound">
+        <source src="https://www.orangefreesounds.com/wp-content/uploads/2022/01/Long-beep-sound.mp3" type="audio/mp3">
+
+    </audio>
+
+    <script>
+        let votingLocked = false;  // lock only during LED/beep period
+
+        function castVote(btn, num) {
+            if (votingLocked) return; // block during LED ON time only
+            votingLocked = true;
+
+            // Remove existing active states
+            document.querySelectorAll(".vote-btn").forEach(x => x.classList.remove("active"));
+            document.querySelectorAll(".led").forEach(x => x.classList.remove("on"));
+
+            // Add active class
+            btn.classList.add("active");
+
+            // LED ON
+            let led = document.getElementById("led" + num);
+            led.classList.add("on");
+
+            // Play beep
+            let beep = document.getElementById("beepSound");
+            beep.currentTime = 0;
+            beep.play();
+
+            // Turn OFF LED + stop beep + reset for next vote
+            setTimeout(() => {
+                led.classList.remove("on");
+                btn.classList.remove("active");
+
+                beep.pause();
+                beep.currentTime = 0;
+
+                votingLocked = false; // unlock for next vote
+            }, 1200);
+        }
+    </script>
+
+
+</body>
+
+</html>
