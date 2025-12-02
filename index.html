@@ -45,6 +45,7 @@ body {
 .ward {
   font-size: 14px;
   color: #444;
+  margin-top: 6px;
 }
 
 .voted-badge {
@@ -83,6 +84,7 @@ body {
   <div class="voted-badge">Voted ✔</div>
 
   <div id="name" class="name"></div>
+  <div id="number" class="ward"></div>
   <div id="ward" class="ward"></div>
 
   <div class="btn" onclick="window.location.href='ward.html'">
@@ -93,9 +95,17 @@ body {
 <script>
 const p = new URLSearchParams(window.location.search);
 
-document.getElementById('name').textContent = p.get('name') || '';
-document.getElementById('ward').textContent = "WARD: " + (p.get('ward') || '');
-document.getElementById('photo').src = p.get('photo') || '';
+document.getElementById('name').textContent =
+  p.get('name') || '';
+
+document.getElementById('number').textContent =
+  "Candidate No: " + (p.get('number') || '');
+
+document.getElementById('ward').textContent =
+  "Ward: " + (p.get('ward') || '');
+
+document.getElementById('photo').src =
+  p.get('photo') || '';
 </script>
 
 </body>
