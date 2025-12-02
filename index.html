@@ -1,230 +1,102 @@
-<!-- Polster-like EVM clone: full standalone HTML/CSS/JS (drop into a Vite public/index.html or open locally)
-
-Usage:
- - To show a candidate image for a candidate row, add a query param `?photo=<url>` or `?photoN=<url>` where N is candidate number.
- - Example: index.html?photo=https://example.com/Hand_INC.jpg
- - The script will also try `/v2/evm/candidate/<id>/photo` if the path contains an id-like segment.
-
-Features:
- - Responsive centered EVM card
- - Candidate rows with number, name, symbol image (loaded dynamically), LED, big rounded vote button
- - Button/LED locking for 1.2s with beep
- - Small accessibility + keyboard support (Enter to vote when a row is focused)
-
--->
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ml">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Polster-like EVM - Demo</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote Confirmation</title>
+
 <style>
-:root{
-  --card-bg:#e6f0f8;
-  --panel:#ffffff;
-  --accent:#0b4b7a; /* dark blue */
-  --soft:#dfeef8;
-  --muted:#9aa6ad;
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: linear-gradient(180deg, #ffffff, #dcdcdc);
+  text-align: center;
+  padding-top: 70px;
 }
-*{box-sizing:border-box}
-html,body{height:100%;margin:0}
-body{
-  display:flex;align-items:flex-start;justify-content:center;
-  background:linear-gradient(180deg,#fafafa, #f2f6fb);
-  font-family:Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing:antialiased;
+
+.title {
+  font-size: 22px;
+  color: #073b60;
+  font-weight: 700;
+  line-height: 32px;
 }
-.container{width:95%;max-width:760px;padding:24px;margin-top:28px}
-.header-pills{display:flex;gap:18px;justify-content:center;margin-bottom:12px}
-.pill{padding:10px 36px;border-radius:24px;background:#d7d7d7;color:#444;font-weight:600}
-.pill.active{background:#10a0c6;color:white}
-.card{
-  background:var(--card-bg);border-radius:22px;padding:16px;box-shadow:0 8px 30px rgba(20,30,40,0.08);
+
+.card {
+  width: 300px;
+  margin: 40px auto;
+  background: white;
+  border-radius: 18px;
+  padding-bottom: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
-.card-inner{background:var(--panel);border-radius:14px;padding:18px}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:10px}
-.status{font-weight:700;color:#0b2b1f}
-.status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2db34a;margin-left:8px}
-.title{font-weight:700;color:#0c3b5a}
-.table-wrap{margin-top:12px;background:transparent;padding:14px;border-radius:8px}
-.table{width:100%;border-collapse:collapse}
-.table tr{height:52px}
-.table td{vertical-align:middle;border-bottom:1px solid rgba(15,25,35,0.06);padding:6px}
-.table .idx{width:42px;text-align:center;color:var(--muted)}
-.table .name{font-weight:600;text-align:left;padding-left:12px}
-.table .symbol{width:74px;text-align:center}
-.symbol img{max-width:36px;height:36px;border-radius:6px;background:white;padding:4px;box-shadow:0 1px 0 rgba(0,0,0,0.06)}
-.controls{width:120px;text-align:center}
-.vote-btn{
-  width:76px;height:36px;border-radius:18px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,0.12);
+
+.photo {
+  width: 100%;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
 }
-.vote-btn:active{transform:translateY(1px)}
-.led{width:18px;height:18px;border-radius:50%;background:#5c0b10;box-shadow:inset 0 0 6px rgba(0,0,0,0.35)}
-.led.on{background:#b5161a;box-shadow:0 0 8px rgba(181,22,26,0.8), inset 0 0 6px #ffcfcf}
-.row-focused{outline:3px solid rgba(11,75,122,0.08);border-radius:8px}
-.small-muted{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
-@media (max-width:520px){
-  .container{max-width:360px;padding:10px}
-  .pill{padding:8px 18px}
-  .table tr{height:56px}
-  .controls{width:92px}
-  .symbol img{max-width:28px;height:28px}
+
+.name {
+  font-size: 20px;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.ward {
+  font-size: 14px;
+  color: #444;
+}
+
+.voted-badge {
+  background: #0b4b7a;
+  color: white;
+  padding: 6px 14px;
+  display: inline-block;
+  margin-top: -14px;
+  border-radius: 18px;
+  font-size: 13px;
+}
+
+.btn {
+  margin-top: 16px;
+  padding: 12px 26px;
+  background: #0b4b7a;
+  border-radius: 24px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
 }
 </style>
 </head>
+
 <body>
-<div class="container">
-  <div class="header-pills">
-    <div class="pill">Ward</div>
-    <div class="pill">Block</div>
-    <div class="pill active">District</div>
-  </div>
 
-  <div class="card">
-    <div class="card-inner">
-      <div class="topbar">
-        <div class="status">Ready <span class="dot" aria-hidden></span></div>
-        <div class="title">Ballot Unit 1</div>
-      </div>
+<div class="title">
+ വോട്ടിംഗ് മെഷീനിൽ നിങ്ങളുടെ<br>
+ ജൂമ്മസ്യമാണ് నమోదు
+</div>
 
-      <div class="table-wrap">
-        <table class="table" role="list" aria-label="candidate-list">
-          <tbody id="candidateBody">
-            <!-- rows added by JS -->
-          </tbody>
-        </table>
-      </div>
+<div class="card">
+  <img id="photo" class="photo" src="" alt="Candidate">
 
-      <div class="small-muted">Use mouse or keyboard. Focus a row and press Enter to vote.</div>
-    </div>
+  <div class="voted-badge">Voted ✔</div>
+
+  <div id="name" class="name"></div>
+  <div id="ward" class="ward"></div>
+
+  <div class="btn" onclick="window.location.href='ward.html'">
+    Vote Again
   </div>
 </div>
 
-<audio id="beepSound" preload="auto">
-  <source src="https://www.orangefreesounds.com/wp-content/uploads/2022/01/Long-beep-sound.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-// Sample candidates (in real app load from server)
-const defaultCandidates = [
-  { id: 1, name: '', symbol: '' },
-  { id: 2, name: '', symbol: '' },
-  { id: 3, name: 'സൂരജ് എം', symbol: 'images/Hand_INC.jpg' },
-  { id: 4, name: '', symbol: '' },
-  { id: 5, name: '', symbol: '' },
-  { id: 6, name: '', symbol: '' },
-  { id: 7, name: '', symbol: '' },
-  { id: 8, name: '', symbol: '' },
-  { id: 9, name: '', symbol: '' },
-  { id: 10, name: '', symbol: '' }
-];
+const p = new URLSearchParams(window.location.search);
 
-const candidateBody = document.getElementById('candidateBody');
-let votingLocked = false;
-
-// Utility to get query params
-function getQueryParams() {
-  const p = {};
-  location.search.replace(/^\?/, '').split('&').forEach(pair=>{
-    if(!pair) return; const [k,v]=pair.split('='); p[decodeURIComponent(k)] = decodeURIComponent(v||'');
-  });
-  return p;
-}
-
-const params = getQueryParams();
-
-// If path contains candidate id like /candidate/ALAPPUZHA_G04073_W01213_1/polster
-function extractIdFromPath(){
-  const parts = location.pathname.split('/').filter(Boolean);
-  const idx = parts.findIndex(x=>x.toLowerCase()==='candidate');
-  if(idx>=0 && parts.length>idx+1) return parts[idx+1];
-  return null;
-}
-const pathId = extractIdFromPath();
-
-// Build rows
-function renderRows(candidates){
-  candidateBody.innerHTML='';
-  candidates.forEach((c,ii)=>{
-    const tr = document.createElement('tr');
-    tr.tabIndex = 0; // focusable
-    tr.className = 'candidate-row';
-    tr.dataset.num = c.id;
-
-    tr.innerHTML = `
-      <td class="idx">${c.id}</td>
-      <td class="name">${c.name || '&nbsp;'}</td>
-      <td class="symbol">${c.symbol ? `<img alt="symbol-${c.id}" src="${c.symbol}">` : ''}</td>
-      <td class="controls">
-        <div style="display:flex;align-items:center;gap:10px;justify-content:flex-end">
-          <div class="led" id="led${c.id}" aria-hidden></div>
-          <div class="vote-btn" role="button" tabindex="-1" data-id="${c.id}">VOTE</div>
-        </div>
-      </td>
-    `;
-
-    // keyboard focus styling
-    tr.addEventListener('focus', ()=> tr.classList.add('row-focused'));
-    tr.addEventListener('blur', ()=> tr.classList.remove('row-focused'));
-
-    // row keyboard vote
-    tr.addEventListener('keydown', (ev)=>{
-      if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); const btn = tr.querySelector('.vote-btn'); btn.click(); }
-    });
-
-    candidateBody.appendChild(tr);
-  });
-
-  // attach click handlers to vote buttons
-  document.querySelectorAll('.vote-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> castVote(btn, parseInt(btn.dataset.id,10)));
-  });
-}
-
-// Try to map photo query params like photo, photo3, photo2 etc
-function attachPhotos(candidates){
-  candidates.forEach(c=>{
-    const qKey = params['photo' + c.id] || params['photo'];
-    if(qKey) c.symbol = qKey;
-    // if not, and pathId exists try to construct a candidate-photo URL pattern
-    else if(pathId){
-      // best-effort common pattern; may fail if server doesn't serve file
-      // adjust this to your backend pattern if available
-      c.symbol = `/v2/evm/candidate/${encodeURIComponent(pathId)}/symbol_${c.id}.jpg`;
-    }
-  });
-}
-
-attachPhotos(defaultCandidates);
-renderRows(defaultCandidates);
-
-function castVote(btn, num){
-  if(votingLocked) return; // lock while LED/beep
-  votingLocked = true;
-
-  // clear previous
-  document.querySelectorAll('.vote-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.led').forEach(l=>l.classList.remove('on'));
-
-  btn.classList.add('active');
-  const led = document.getElementById('led' + num);
-  if(led) led.classList.add('on');
-
-  // play beep
-  const beep = document.getElementById('beepSound');
-  beep.currentTime = 0; beep.play().catch(()=>{});
-
-  // simulate sending vote (here console.log — replace with fetch to your API)
-  console.log('voted for', num, 'pathId', pathId);
-
-  setTimeout(()=>{
-    if(led) led.classList.remove('on');
-    btn.classList.remove('active');
-    try{ beep.pause(); beep.currentTime = 0; }catch(e){}
-    votingLocked = false;
-  }, 1200);
-}
-
+document.getElementById('name').textContent = p.get('name') || '';
+document.getElementById('ward').textContent = "WARD: " + (p.get('ward') || '');
+document.getElementById('photo').src = p.get('photo') || '';
 </script>
+
 </body>
 </html>
