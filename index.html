@@ -1,112 +1,40 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vote Confirmation</title>
-
-<style>
-body {
-  margin: 0;
-  font-family: Inter, sans-serif;
-  background: linear-gradient(180deg, #ffffff, #dcdcdc);
-  text-align: center;
-  padding-top: 70px;
-}
-
-.title {
-  font-size: 22px;
-  color: #073b60;
-  font-weight: 700;
-  line-height: 32px;
-}
-
-.card {
-  width: 300px;
-  margin: 40px auto;
-  background: white;
-  border-radius: 18px;
-  padding-bottom: 20px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-}
-
-.photo {
-  width: 100%;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
-}
-
-.name {
-  font-size: 20px;
-  margin-top: 10px;
-  font-weight: 700;
-}
-
-.ward {
-  font-size: 14px;
-  color: #444;
-  margin-top: 6px;
-}
-
-.voted-badge {
-  background: #0b4b7a;
-  color: white;
-  padding: 6px 14px;
-  display: inline-block;
-  margin-top: -14px;
-  border-radius: 18px;
-  font-size: 13px;
-}
-
-.btn {
-  margin-top: 16px;
-  padding: 12px 26px;
-  background: #0b4b7a;
-  border-radius: 24px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-block;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVM Voting - Main Ballot</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <h1>EVM Voting Machine</h1>
+    <table id="ballot-table" border="1">
+        <tr>
+            <th>No</th>
+            <th>Candidate Name</th>
+            <th>Symbol</th>
+            <th>Vote</th>
+            <th>LED</th>
+        </tr>
+        <!-- Row 1: ASHOKAN -->
+        <tr>
+            <td>1</td>
+            <td>ASHOKAN</td>
+            <td><img src="Hand_INC_1.jpg" alt="ASHOKAN" width="50"></td>
+            <td><button onclick="castVote(1)">Vote</button></td>
+            <td><div id="led1" class="led"></div></td>
+        </tr>
+        <!-- Rows 2-9: Empty -->
+        <tr><td>2</td><td></td><td></td><td><button onclick="castVote(2)">Vote</button></td><td><div id="led2" class="led"></div></td></tr>
+        <tr><td>3</td><td></td><td></td><td><button onclick="castVote(3)">Vote</button></td><td><div id="led3" class="led"></div></td></tr>
+        <tr><td>4</td><td></td><td></td><td><button onclick="castVote(4)">Vote</button></td><td><div id="led4" class="led"></div></td></tr>
+        <tr><td>5</td><td></td><td></td><td><button onclick="castVote(5)">Vote</button></td><td><div id="led5" class="led"></div></td></tr>
+        <tr><td>6</td><td></td><td></td><td><button onclick="castVote(6)">Vote</button></td><td><div id="led6" class="led"></div></td></tr>
+        <tr><td>7</td><td></td><td></td><td><button onclick="castVote(7)">Vote</button></td><td><div id="led7" class="led"></div></td></tr>
+        <tr><td>8</td><td></td><td></td><td><button onclick="castVote(8)">Vote</button></td><td><div id="led8" class="led"></div></td></tr>
+        <tr><td>9</td><td></td><td></td><td><button onclick="castVote(9)">Vote</button></td><td><div id="led9" class="led"></div></td></tr>
+    </table>
 
-<div class="title">
- വോട്ടിംഗ് മെഷീനിൽ നിങ്ങളുടെ<br>
- ജൂമ്മസ്യമാണ് నమోదు
-</div>
-
-<div class="card">
-  <img id="photo" class="photo" src="" alt="Candidate">
-
-  <div class="voted-badge">Voted ✔</div>
-
-  <div id="name" class="name"></div>
-  <div id="number" class="ward"></div>
-  <div id="ward" class="ward"></div>
-
-  <div class="btn" onclick="window.location.href='ward.html'">
-    Vote Again
-  </div>
-</div>
-
-<script>
-const p = new URLSearchParams(window.location.search);
-
-document.getElementById('name').textContent =
-  p.get('name') || '';
-
-document.getElementById('number').textContent =
-  "Candidate No: " + (p.get('number') || '');
-
-document.getElementById('ward').textContent =
-  "Ward: " + (p.get('ward') || '');
-
-document.getElementById('photo').src =
-  p.get('photo') || '';
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
