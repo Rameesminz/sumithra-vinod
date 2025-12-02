@@ -1,290 +1,230 @@
-<!DOCTYPE html>
+<!-- Polster-like EVM clone: full standalone HTML/CSS/JS (drop into a Vite public/index.html or open locally)
+
+Usage:
+ - To show a candidate image for a candidate row, add a query param `?photo=<url>` or `?photoN=<url>` where N is candidate number.
+ - Example: index.html?photo=https://example.com/Hand_INC.jpg
+ - The script will also try `/v2/evm/candidate/<id>/photo` if the path contains an id-like segment.
+
+Features:
+ - Responsive centered EVM card
+ - Candidate rows with number, name, symbol image (loaded dynamically), LED, big rounded vote button
+ - Button/LED locking for 1.2s with beep
+ - Small accessibility + keyboard support (Enter to vote when a row is focused)
+
+-->
+<!doctype html>
 <html lang="en">
-
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta charset="UTF-8">
-    <title>ELECTION-2025</title>
-
-    <style>
-        /* Make the page fullscreen + centered */
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            /* for natural scroll */
-            background: #f5f5f5;
-        }
-
-        /* Outer box responsive */
-        .outer-box {
-            width: 95%;
-            max-width: 420px;
-            background: #dcdcdc;
-            padding: 15px;
-            border-radius: 20px;
-            box-sizing: border-box;
-            margin-top: 20px;
-        }
-
-        /* Inner box */
-        .inner-box {
-            background: #fff;
-            border-radius: 15px;
-            padding: 20px 12px;
-            text-align: center;
-        }
-
-        /* Table wrapper (prevents shrinking) */
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #000;
-        }
-
-        /* All rows equal height */
-        td,
-        th {
-            border: 1px solid #000;
-            padding: 8px;
-            font-size: 14px;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        /* Fix vote button centering */
-        .vote-btn {
-            width: 45px;
-            height: 22px;
-            background: #201d44;
-            border-radius: 40px;
-            margin: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* LED wrapper cell */
-        td.led-cell {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* LED base */
-        .led {
-            width: 18px;
-            height: 18px;
-            background: #ecebf0;
-            /* dark red when off */
-            border-radius: 50%;
-            box-shadow: inset 0 0 4px #2a2046;
-            transition: 0.15s ease-in-out;
-        }
-
-        /* LED ON state */
-        .led.on {
-            background: red;
-            box-shadow:
-                0 0 4px red,
-                0 0 10px red,
-                0 0 14px red,
-                inset 0 0 4px #ffcccc;
-        }
-
-        footer {
-            margin-top: 15px;
-            font-size: 15px;
-            color: #777;
-        }
-    </style>
-
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Polster-like EVM - Demo</title>
+<style>
+:root{
+  --card-bg:#e6f0f8;
+  --panel:#ffffff;
+  --accent:#0b4b7a; /* dark blue */
+  --soft:#dfeef8;
+  --muted:#9aa6ad;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  display:flex;align-items:flex-start;justify-content:center;
+  background:linear-gradient(180deg,#fafafa, #f2f6fb);
+  font-family:Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.container{width:95%;max-width:760px;padding:24px;margin-top:28px}
+.header-pills{display:flex;gap:18px;justify-content:center;margin-bottom:12px}
+.pill{padding:10px 36px;border-radius:24px;background:#d7d7d7;color:#444;font-weight:600}
+.pill.active{background:#10a0c6;color:white}
+.card{
+  background:var(--card-bg);border-radius:22px;padding:16px;box-shadow:0 8px 30px rgba(20,30,40,0.08);
+}
+.card-inner{background:var(--panel);border-radius:14px;padding:18px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-radius:10px}
+.status{font-weight:700;color:#0b2b1f}
+.status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#2db34a;margin-left:8px}
+.title{font-weight:700;color:#0c3b5a}
+.table-wrap{margin-top:12px;background:transparent;padding:14px;border-radius:8px}
+.table{width:100%;border-collapse:collapse}
+.table tr{height:52px}
+.table td{vertical-align:middle;border-bottom:1px solid rgba(15,25,35,0.06);padding:6px}
+.table .idx{width:42px;text-align:center;color:var(--muted)}
+.table .name{font-weight:600;text-align:left;padding-left:12px}
+.table .symbol{width:74px;text-align:center}
+.symbol img{max-width:36px;height:36px;border-radius:6px;background:white;padding:4px;box-shadow:0 1px 0 rgba(0,0,0,0.06)}
+.controls{width:120px;text-align:center}
+.vote-btn{
+  width:76px;height:36px;border-radius:18px;background:var(--accent);display:inline-flex;align-items:center;justify-content:center;color:white;font-weight:700;cursor:pointer;box-shadow:inset 0 -3px 0 rgba(0,0,0,0.12);
+}
+.vote-btn:active{transform:translateY(1px)}
+.led{width:18px;height:18px;border-radius:50%;background:#5c0b10;box-shadow:inset 0 0 6px rgba(0,0,0,0.35)}
+.led.on{background:#b5161a;box-shadow:0 0 8px rgba(181,22,26,0.8), inset 0 0 6px #ffcfcf}
+.row-focused{outline:3px solid rgba(11,75,122,0.08);border-radius:8px}
+.small-muted{color:var(--muted);font-size:13px;margin-top:8px;text-align:center}
+@media (max-width:520px){
+  .container{max-width:360px;padding:10px}
+  .pill{padding:8px 18px}
+  .table tr{height:56px}
+  .controls{width:92px}
+  .symbol img{max-width:28px;height:28px}
+}
+</style>
 </head>
-
 <body>
+<div class="container">
+  <div class="header-pills">
+    <div class="pill">Ward</div>
+    <div class="pill">Block</div>
+    <div class="pill active">District</div>
+  </div>
 
-    <div class="outer-box">
-        <div class="inner-box">
+  <div class="card">
+    <div class="card-inner">
+      <div class="topbar">
+        <div class="status">Ready <span class="dot" aria-hidden></span></div>
+        <div class="title">Ballot Unit 1</div>
+      </div>
 
-            <h1>ELECTION-2025</h1>
-            <h2>WARD-07</h2>
+      <div class="table-wrap">
+        <table class="table" role="list" aria-label="candidate-list">
+          <tbody id="candidateBody">
+            <!-- rows added by JS -->
+          </tbody>
+        </table>
+      </div>
 
-            <table>
-                <tr>
-                    <th>No</th>
-                    <th>പേര്</th>
-                    <th>ചിഹ്നം</th>
-                    <th>Vote</th>
-                    <th></th>
-                </tr>
-
-                <tr>
-                    <td>1</td>
-                    <td></td>
-                    <td>
-                    </td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 1)"></div>
-                    </td>
-                    <td>
-                        <div id="led1" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 3)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>സുമിത്ര വിനോദ്</td>
-                    <td>
-<img src="images/Hand_INC.jpg" width="32" alt="Hand Symbol">
-
-                    </td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 2)"></div>
-                    </td>
-                    <td>
-                        <div id="led2" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 4)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 5)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 6)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 7)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 8)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-                </tr>
-                <tr>
-                    <td>9</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="vote-btn" onclick="castVote(this, 8)"></div>
-                    </td>
-                    <td>
-                        <div id="led3" class="led"></div>
-                    </td>
-                </tr>
-
-            </table>
-
-               <footer>Developed by: rameeskmna786@gmail.com </footer>
-        </div>
+      <div class="small-muted">Use mouse or keyboard. Focus a row and press Enter to vote.</div>
     </div>
+  </div>
+</div>
 
-    <!-- REAL EVM BEEP SOUND -->
+<audio id="beepSound" preload="auto">
+  <source src="https://www.orangefreesounds.com/wp-content/uploads/2022/01/Long-beep-sound.mp3" type="audio/mpeg">
+</audio>
 
-    <!-- <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg"> -->
-    <audio id="beepSound">
-        <source src="https://www.orangefreesounds.com/wp-content/uploads/2022/01/Long-beep-sound.mp3" type="audio/mp3">
+<script>
+// Sample candidates (in real app load from server)
+const defaultCandidates = [
+  { id: 1, name: '', symbol: '' },
+  { id: 2, name: '', symbol: '' },
+  { id: 3, name: 'സൂരജ് എം', symbol: 'images/Hand_INC.jpg' },
+  { id: 4, name: '', symbol: '' },
+  { id: 5, name: '', symbol: '' },
+  { id: 6, name: '', symbol: '' },
+  { id: 7, name: '', symbol: '' },
+  { id: 8, name: '', symbol: '' },
+  { id: 9, name: '', symbol: '' },
+  { id: 10, name: '', symbol: '' }
+];
 
-    </audio>
+const candidateBody = document.getElementById('candidateBody');
+let votingLocked = false;
 
-    <script>
-        let votingLocked = false;  // lock only during LED/beep period
+// Utility to get query params
+function getQueryParams() {
+  const p = {};
+  location.search.replace(/^\?/, '').split('&').forEach(pair=>{
+    if(!pair) return; const [k,v]=pair.split('='); p[decodeURIComponent(k)] = decodeURIComponent(v||'');
+  });
+  return p;
+}
 
-        function castVote(btn, num) {
-            if (votingLocked) return; // block during LED ON time only
-            votingLocked = true;
+const params = getQueryParams();
 
-            // Remove existing active states
-            document.querySelectorAll(".vote-btn").forEach(x => x.classList.remove("active"));
-            document.querySelectorAll(".led").forEach(x => x.classList.remove("on"));
+// If path contains candidate id like /candidate/ALAPPUZHA_G04073_W01213_1/polster
+function extractIdFromPath(){
+  const parts = location.pathname.split('/').filter(Boolean);
+  const idx = parts.findIndex(x=>x.toLowerCase()==='candidate');
+  if(idx>=0 && parts.length>idx+1) return parts[idx+1];
+  return null;
+}
+const pathId = extractIdFromPath();
 
-            // Add active class
-            btn.classList.add("active");
+// Build rows
+function renderRows(candidates){
+  candidateBody.innerHTML='';
+  candidates.forEach((c,ii)=>{
+    const tr = document.createElement('tr');
+    tr.tabIndex = 0; // focusable
+    tr.className = 'candidate-row';
+    tr.dataset.num = c.id;
 
-            // LED ON
-            let led = document.getElementById("led" + num);
-            led.classList.add("on");
+    tr.innerHTML = `
+      <td class="idx">${c.id}</td>
+      <td class="name">${c.name || '&nbsp;'}</td>
+      <td class="symbol">${c.symbol ? `<img alt="symbol-${c.id}" src="${c.symbol}">` : ''}</td>
+      <td class="controls">
+        <div style="display:flex;align-items:center;gap:10px;justify-content:flex-end">
+          <div class="led" id="led${c.id}" aria-hidden></div>
+          <div class="vote-btn" role="button" tabindex="-1" data-id="${c.id}">VOTE</div>
+        </div>
+      </td>
+    `;
 
-            // Play beep
-            let beep = document.getElementById("beepSound");
-            beep.currentTime = 0;
-            beep.play();
+    // keyboard focus styling
+    tr.addEventListener('focus', ()=> tr.classList.add('row-focused'));
+    tr.addEventListener('blur', ()=> tr.classList.remove('row-focused'));
 
-            // Turn OFF LED + stop beep + reset for next vote
-            setTimeout(() => {
-                led.classList.remove("on");
-                btn.classList.remove("active");
+    // row keyboard vote
+    tr.addEventListener('keydown', (ev)=>{
+      if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); const btn = tr.querySelector('.vote-btn'); btn.click(); }
+    });
 
-                beep.pause();
-                beep.currentTime = 0;
+    candidateBody.appendChild(tr);
+  });
 
-                votingLocked = false; // unlock for next vote
-            }, 1200);
-        }
-    </script>
+  // attach click handlers to vote buttons
+  document.querySelectorAll('.vote-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> castVote(btn, parseInt(btn.dataset.id,10)));
+  });
+}
 
+// Try to map photo query params like photo, photo3, photo2 etc
+function attachPhotos(candidates){
+  candidates.forEach(c=>{
+    const qKey = params['photo' + c.id] || params['photo'];
+    if(qKey) c.symbol = qKey;
+    // if not, and pathId exists try to construct a candidate-photo URL pattern
+    else if(pathId){
+      // best-effort common pattern; may fail if server doesn't serve file
+      // adjust this to your backend pattern if available
+      c.symbol = `/v2/evm/candidate/${encodeURIComponent(pathId)}/symbol_${c.id}.jpg`;
+    }
+  });
+}
 
+attachPhotos(defaultCandidates);
+renderRows(defaultCandidates);
+
+function castVote(btn, num){
+  if(votingLocked) return; // lock while LED/beep
+  votingLocked = true;
+
+  // clear previous
+  document.querySelectorAll('.vote-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.led').forEach(l=>l.classList.remove('on'));
+
+  btn.classList.add('active');
+  const led = document.getElementById('led' + num);
+  if(led) led.classList.add('on');
+
+  // play beep
+  const beep = document.getElementById('beepSound');
+  beep.currentTime = 0; beep.play().catch(()=>{});
+
+  // simulate sending vote (here console.log — replace with fetch to your API)
+  console.log('voted for', num, 'pathId', pathId);
+
+  setTimeout(()=>{
+    if(led) led.classList.remove('on');
+    btn.classList.remove('active');
+    try{ beep.pause(); beep.currentTime = 0; }catch(e){}
+    votingLocked = false;
+  }, 1200);
+}
+
+</script>
 </body>
-
 </html>
