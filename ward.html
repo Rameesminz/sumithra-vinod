@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Ward</title>
+</head>
+<body>
+    <h2>Select Your Ward</h2>
+    <form id="wardForm">
+        <select id="wardSelect">
+            <option value="Ward 1">Ward 1</option>
+            <option value="Ward 2">Ward 2</option>
+            <option value="Ward 3">Ward 3</option>
+        </select>
+        <button type="submit">Proceed</button>
+    </form>
+
+    <script>
+        document.getElementById("wardForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            const ward = document.getElementById("wardSelect").value;
+            localStorage.setItem("selectedWard", ward);
+            window.location.href = "index.html";
+        });
+    </script>
+</body>
+</html>
