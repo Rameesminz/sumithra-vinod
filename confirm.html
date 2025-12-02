@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Confirmation</title>
+    <style>
+        body { text-align:center; font-family:sans-serif; margin-top:50px; }
+        img { width:100px; }
+    </style>
+</head>
+<body>
+    <h2>Vote Confirmation</h2>
+    <p>Candidate Number: <span id="candNo"></span></p>
+    <p>Candidate Name: <span id="candName"></span></p>
+    <p>Ward: <span id="ward"></span></p>
+    <img id="candImg" src="" alt="Candidate Photo">
+    <br><br>
+    <button onclick="goBack()">Back</button>
+
+    <script>
+        const voteData = JSON.parse(localStorage.getItem("lastVote"));
+        if(voteData){
+            document.getElementById("candNo").innerText = voteData.number;
+            document.getElementById("candName").innerText = voteData.name;
+            document.getElementById("ward").innerText = localStorage.getItem("selectedWard") || '';
+            document.getElementById("candImg").src = voteData.img || '';
+        }
+
+        function goBack(){
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
