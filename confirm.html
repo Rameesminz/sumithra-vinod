@@ -1,29 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Vote Registered</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vote Confirmation</title>
 
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-            background: white;
             font-family: Arial;
+            text-align: center;
+            padding-top: 30px;
         }
-
-        .card {
-            margin-top: 60px;
-            display: inline-block;
-            padding: 20px;
-            border-radius: 20px;
-            background: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
         img {
-            width: 160px;
-            border
+            width: 140px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .box {
+            background: #e8e8e8;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+        <h1>Vote Registered Successfully</h1>
+
+        <h2 id="ward"></h2>
+        <h3 id="candidateName"></h3>
+
+        <img id="candidatePhoto" src="" alt="Symbol">
+    </div>
+
+<script>
+    const url = new URLSearchParams(window.location.search);
+
+    document.getElementById("ward").innerText = "WARD - " + (url.get("ward") || "");
+    document.getElementById("candidateName").innerText = url.get("name") || "";
+    document.getElementById("candidatePhoto").src = url.get("photo") || "";
+</script>
+
+</body>
+</html>
