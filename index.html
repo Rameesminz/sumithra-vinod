@@ -1,128 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EVM Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>ELECTION-2025</title>
 
-<style>
-    body {
-        background: #ffffff;
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-    }
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #f5f5f5;
+        }
 
-    .evm-box {
-        width: 500px;
-        margin-top: 40px;
-        background: #ffd8e8;
-        border-radius: 20px;
-        padding: 20px;
-    }
+        .outer-box {
+            width: 95%;
+            max-width: 420px;
+            background: #dcdcdc;
+            padding: 15px;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
 
-    .top-header {
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
+        .inner-box {
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px 12px;
+        }
 
-    .ready {
-        color: green;
-        font-size: 18px;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        th, td {
+            border: 1px solid #000;
+            padding: 10px;
+            font-size: 15px;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-    tr {
-        border-bottom: 1px solid #f4a4c4;
-    }
+        td img {
+            display: block;
+            margin: auto;
+        }
 
-    td {
-        padding: 12px 8px;
-        font-size: 18px;
-    }
+        .vote-btn {
+            width: 45px;
+            height: 24px;
+            background: #1d2554;
+            border-radius: 40px;
+            display: flex;
+            margin: auto;
+        }
 
-    .sl {
-        width: 40px;
-        text-align: center;
-    }
+        .led {
+            width: 16px;
+            height: 16px;
+            background: #c7c2c2;
+            border-radius: 50%;
+            margin: auto;
+            box-shadow: inset 0 0 4px #2a2046;
+            transition: 0.2s;
+        }
 
-    .name {
-        width: 200px;
-        text-align: left;
-        font-weight: bold;
-    }
+        .led.on {
+            background: red;
+            box-shadow:
+                0 0 4px red,
+                0 0 10px red,
+                0 0 14px red,
+                inset 0 0 4px #ffc8c8;
+        }
 
-    .symbol img {
-        width: 34px;
-    }
-
-    .led {
-        width: 12px;
-        height: 12px;
-        background: #7a0019;
-        border-radius: 50%;
-        margin-top: 8px;
-        margin-left: 10px;
-    }
-
-    .btn button {
-        width: 45px;
-        height: 30px;
-        background: #003366;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-</style>
-
+        footer {
+            margin-top: 15px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="evm-box">
+    <div class="outer-box">
+        <div class="inner-box">
 
-    <div class="top-header">
-        Ballot Unit 1  
-        <span class="ready">• Ready</span>
+            <h2 style="text-align:center;margin-top:0;">ELECTION-2025</h2>
+            <h3 style="text-align:center;margin-top:-10px;">WARD - 11</h3>
+
+            <table>
+                <tr>
+                    <th>No</th>
+                    <th>പേര്</th>
+                    <th>ചിഹ്നം</th>
+                    <th>Vote</th>
+                    <th>LED</th>
+                </tr>
+
+                <!-- Row 1 -->
+                <tr>
+                    <td>1</td>
+                    <td></td>
+                    <td></td>
+                    <td><div class="vote-btn" onclick="castVote(this,1)"></div></td>
+                    <td><div id="led1" class="led"></div></td>
+                </tr>
+
+                <!-- Row 2 -->
+                <tr>
+                    <td>2</td>
+                    <td>കെ.എം. ഇസ്ഹാക്</td>
+                    <td><img src="images/Hand_INC.jpg" width="32"></td>
+                    <td><div class="vote-btn" onclick="castVote(this,2)"></div></td>
+                    <td><div id="led2" class="led"></div></td>
+                </tr>
+
+                <!-- Row 3 -->
+                <tr>
+                    <td>3</td>
+                    <td>സൂരജ് എം</td>
+                    <td><img src="images/Hand_INC.jpg" width="32"></td>
+                    <td><div class="vote-btn" onclick="castVote(this,3)"></div></td>
+                    <td><div id="led3" class="led"></div></td>
+                </tr>
+
+                <!-- Remaining empty rows -->
+                <tr><td>4</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,4)"></div></td><td><div id="led4" class="led"></div></td></tr>
+                <tr><td>5</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,5)"></div></td><td><div id="led5" class="led"></div></td></tr>
+                <tr><td>6</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,6)"></div></td><td><div id="led6" class="led"></div></td></tr>
+                <tr><td>7</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,7)"></div></td><td><div id="led7" class="led"></div></td></tr>
+                <tr><td>8</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,8)"></div></td><td><div id="led8" class="led"></div></td></tr>
+                <tr><td>9</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,9)"></div></td><td><div id="led9" class="led"></div></td></tr>
+                <tr><td>10</td><td></td><td></td><td><div class="vote-btn" onclick="castVote(this,10)"></div></td><td><div id="led10" class="led"></div></td></tr>
+
+            </table>
+
+            <footer>Developed by: rameeskmna786@gmail.com</footer>
+        </div>
     </div>
 
-    <table>
-        <tr>
-            <td class="sl">1</td>
-            <td class="name">ashokan</td>
+    <audio id="beepSound">
+        <source src="https://www.orangefreesounds.com/wp-content/uploads/2022/01/Long-beep-sound.mp3" type="audio/mp3">
+    </audio>
 
-            <!-- Symbol -->
-            <td class="symbol">
-                <img src="./assets/Hand_INC/hand.jpg" alt="symbol">
-            </td>
+    <script>
+        let votingLocked = false;
 
-            <!-- LED -->
-            <td><div class="led"></div></td>
+        function castVote(btn, num) {
+            if (votingLocked) return;
+            votingLocked = true;
 
-            <!-- Button -->
-            <td class="btn">
-                <button></button>
-            </td>
-        </tr>
+            document.querySelectorAll(".led").forEach(x => x.classList.remove("on"));
 
-        <!-- more rows, empty -->
-        <tr><td class="sl">2</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">3</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">4</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">5</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">6</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">7</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">8</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">9</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-        <tr><td class="sl">10</td><td class="name"></td><td></td><td><div class="led"></div></td><td class="btn"><button></button></td></tr>
-    </table>
+            let led = document.getElementById("led" + num);
+            led.classList.add("on");
 
-</div>
+            let beep = document.getElementById("beepSound");
+            beep.currentTime = 0;
+            beep.play();
+
+            setTimeout(() => {
+                led.classList.remove("on");
+                beep.pause();
+                votingLocked = false;
+            }, 1200);
+        }
+    </script>
 
 </body>
 </html>
